@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0b1420">
+  <meta name="application-name" content="FretLab 8">
+  <meta name="description" content="Apprends toutes les notes de ta guitare 8 cordes grâce à un manche interactif et des exercices progressifs.">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <title>FretLab 8 — Le manche en mémoire</title>
+  <style>
+    :root{color-scheme:dark;--bg:#0a1019;--surface:#131f2a;--surface2:#192b37;--line:#2c4553;--text:#f0f7f8;--muted:#9fb5c1;--mint:#56dbbc;--gold:#ffca75;--pink:#fa8f9e;--strw:83px;--fretw:53px}
+    *{box-sizing:border-box}body{margin:0;color:var(--text);background:radial-gradient(ellipse 85% 440px at 80% 0%,#193e44 0%,transparent 70%),var(--bg);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100dvh}
+    button,select{font:inherit}button{touch-action:manipulation}.shell{max-width:1030px;margin:auto;padding:22px 17px 54px}
+    .head{display:flex;justify-content:space-between;align-items:center;gap:14px}.eyebrow{font-size:10px;font-weight:900;letter-spacing:.18em;color:var(--mint)}h1{letter-spacing:-.06em;font-size:clamp(31px,5vw,43px);margin:5px 0 2px;line-height:1.1}header p{color:var(--muted);margin:7px 0 0;max-width:660px}.mark{font-size:31px;color:var(--gold)}
+    .tabs{display:flex;gap:5px;background:#0c1a24;border:1px solid var(--line);border-radius:14px;padding:5px;margin-top:22px;overflow-x:auto;scrollbar-width:thin}.tab{flex:1 0 auto;border:0;border-radius:9px;color:#c1d1d7;background:transparent;padding:12px 13px;font-size:13px;font-weight:800;white-space:nowrap;cursor:pointer}.tab[aria-selected=true]{background:var(--mint);color:#092721}
+    .surface{margin-top:15px;padding:19px;border:1px solid var(--line);background:rgba(18,31,42,.97);border-radius:18px;box-shadow:0 12px 30px #0002}
+    .mini-title{font-size:19px;font-weight:850;letter-spacing:-.025em;margin:0 0 5px}.muted{color:var(--muted)}.small{font-size:12px}.section-intro{margin:0 0 16px;color:var(--muted);font-size:13px}.settings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}.field{display:flex;flex-direction:column;gap:6px}.field label{font-size:12px;color:var(--muted);font-weight:750}select{min-height:44px;width:100%;padding:9px 10px;border-radius:10px;border:1px solid #465e6d;background:#101e29;color:var(--text)}
+    .guide{display:grid;gap:15px}.guide-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}.pill-tag{font-size:11px;font-weight:850;color:var(--mint);border:1px solid #376a64;background:#143933;border-radius:999px;padding:6px 10px}
+    .stage-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.stage{min-height:77px;border:1px solid #415867;border-radius:11px;background:#172834;color:var(--text);text-align:left;padding:10px;cursor:pointer}.stage strong{display:block;font-size:12px}.stage span{display:block;font-size:11px;color:var(--muted);margin-top:4px}.stage[aria-current=step]{border-color:var(--mint);box-shadow:inset 0 0 0 1px var(--mint);background:#173d39}.stage[aria-current=step] span{color:#d4fbef}
+    .guide-banner{display:flex;align-items:start;justify-content:space-between;flex-wrap:wrap;gap:9px;background:#0b1d25;border:1px solid #305762;border-radius:12px;padding:13px 14px}.guide-banner strong{color:var(--gold)}.guide-banner p{margin:3px 0 0;font-size:12px;color:var(--muted)}
+    .actions{display:flex;flex-wrap:wrap;align-items:center;gap:9px}.btn{border:0;border-radius:10px;padding:10px 15px;min-height:43px;font-weight:850;cursor:pointer}.btn.primary{color:#082820;background:var(--mint)}.btn.secondary{color:var(--text);background:#273c48;border:1px solid #496473}.btn.subtle{color:#aaced2;background:transparent;border:1px solid #3c5260}.btn:disabled{opacity:.45;cursor:default}
+    .learn-stats{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.chip{border:1px solid #47606b;border-radius:8px;padding:7px 10px;font-size:12px;color:#d1e2e6}.chip strong{color:var(--mint)}
+    .boardtop{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:3px 0 11px}.boardtop h2{font-size:18px;margin:0;letter-spacing:-.02em}.board-scroll{overflow-x:auto;overflow-y:hidden;border:1px solid #486170;border-radius:12px;background:#1c303b;scrollbar-width:thin;scrollbar-color:#516b76 transparent;overscroll-behavior-x:contain}.board{width:max-content;--cols:13}.fret-row{display:grid;grid-template-columns:var(--strw) repeat(var(--cols),var(--fretw))}.head-cell{height:40px;font-size:12px;font-weight:750;color:#c0d4d9;background:#101f2a;border-bottom:2px solid #697e89;display:flex;align-items:center;justify-content:center;position:relative}.head-cell.dot::after{content:'•';color:var(--gold);font-size:17px;position:absolute;bottom:-10px;z-index:1}.head-cell.double::after{content:'••';color:var(--gold);letter-spacing:3px;font-size:11px;position:absolute;bottom:-9px}.head-cell.corner{position:sticky;left:0;z-index:8;justify-content:start;padding-left:10px}
+    .string-label{position:sticky;left:0;z-index:3;background:#18303a;border-right:3px solid #bdcbd0;display:flex;flex-direction:column;justify-content:center;padding:4px 8px;min-height:51px;line-height:1.2;font-weight:850}.string-label small{font-size:10px;font-weight:550;color:var(--muted);margin-top:4px}
+    .fret{appearance:none;border:0;border-right:2px solid #697c84;color:var(--text);min-height:51px;background:linear-gradient(90deg,#2b424c,#223843);position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}.fret:nth-of-type(2n){background:linear-gradient(90deg,#283e49,#233a43)}.fret:before{content:"";background:#c3ced2a1;position:absolute;top:calc(50% - var(--wire)/2);left:0;right:0;height:var(--wire);box-shadow:0 1px 2px #0005;pointer-events:none}.fret.open{background:#172a34;border-right:4px solid #e5eae9}.fret:focus-visible{outline:3px solid var(--gold);outline-offset:-3px;z-index:2}
+    .note-pill{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;min-height:29px;min-width:33px;border-radius:8px;padding:2px 3px;font-size:12px;font-weight:900;background:#152933ee}.note-pill.natural{color:#f4f8f9}.note-pill.sharp{color:var(--gold)}.note-pill.hidden{opacity:0}.fret.target{box-shadow:inset 0 0 0 3px var(--mint);z-index:1}.fret.target .note-pill,.fret.correct .note-pill{color:#092621!important;background:var(--mint);opacity:1}.fret.wrong .note-pill{color:#31141a!important;background:var(--pink);opacity:1}.fret.anchor .note-pill{background:#244c50;border:1px solid #54a6a4;opacity:1}.fret.dim{opacity:.57}.fret.dim:focus{opacity:1}.boardfoot{display:flex;gap:9px;justify-content:space-between;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:9px}
+    .task{padding:14px 15px;background:#0b1c27;border:1px solid #365360;border-radius:12px;margin:2px 0 13px}.task-kicker{font-size:10px;letter-spacing:.14em;color:var(--mint);font-weight:900}.task-title{font-size:clamp(18px,4.4vw,24px);font-weight:900;margin-top:4px;line-height:1.25}.task-note{font-size:12px;color:var(--muted);margin-top:5px}
+    .answers{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin:12px 0}.answer{border:1px solid #4a6370;background:#213844;color:var(--text);font-size:14px;font-weight:850;border-radius:10px;min-height:46px;cursor:pointer}.answer:disabled{opacity:.61;cursor:default}.answer.correct,.answer:disabled.correct{border-color:var(--mint);background:#155146;color:#e9fff8;opacity:1}.answer.wrong,.answer:disabled.wrong{border-color:var(--pink);background:#5b313c;color:#fff;opacity:1}
+    .feedback{padding:11px 13px;border:1px solid #3d5562;border-radius:10px;color:var(--muted);background:#10232d;min-height:43px;font-size:13px}.feedback.good{border-color:#348978;background:#103830;color:#c9fff0}.feedback.bad{border-color:#ad6571;background:#38242d;color:#ffe3e7}.feedback p{margin:6px 0 0}.confidence{background:#142e36;border:1px solid #42747c;border-radius:11px;padding:12px;margin-top:11px}.confidence p{margin:0 0 9px;font-weight:750;font-size:13px}.confidence .btn{font-size:12px}
+    .readout{border:1px solid #395563;background:#0d212b;border-radius:11px;margin-top:13px;padding:12px 14px;min-height:68px}.readout strong{font-size:20px;color:var(--gold)}.readout p{color:var(--muted);margin:3px 0 0;font-size:12px}.statsbar{display:flex;align-items:center;gap:13px;flex-wrap:wrap;margin-top:15px;color:var(--muted);font-size:12px}.statsbar strong{color:var(--text);font-variant-numeric:tabular-nums}
+    .memory-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.memory-card{border:1px solid #3b5664;background:#122630;border-radius:13px;padding:14px}.memory-card h3{font-size:14px;margin:0 0 7px}.memory-card p{font-size:13px;color:var(--muted);margin:0}.memory-card strong{color:var(--gold)}.scale{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px}.scale span{border:1px solid #466673;border-radius:7px;padding:7px 9px;background:#132d36;font-weight:750;font-size:12px}.rule{border:1px solid #42605a;border-radius:12px;background:#11332e;color:#c6efea;padding:11px 14px;font-size:13px;margin-top:13px}
+    .memorow{display:grid;grid-template-columns:85px 1fr;align-items:center;gap:7px;border-bottom:1px solid #344c58;padding:8px 0}.memorow:last-child{border-bottom:0}.memofrets{display:flex;flex-wrap:wrap;gap:6px}.memofret{border-radius:7px;background:#203945;border:1px solid #45626e;padding:6px 8px;font-weight:850;font-size:12px}.memofret small{font-weight:500;color:var(--muted);margin-right:4px}
+    details{margin-top:14px;border:1px solid #354d5a;background:#10212b;border-radius:13px;padding:13px 15px}summary{cursor:pointer;font-weight:850}details p{font-size:12px;color:var(--muted);margin:10px 0}.tuning-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.tuning-grid label{display:block;color:var(--muted);font-size:12px;margin-bottom:5px}.tuning-grid select{min-width:0}.footnote{font-size:12px;color:var(--muted);margin-top:16px;line-height:1.6}.hidden{display:none!important}
+    @media(max-width:690px){.shell{padding:17px 10px 36px}.surface{padding:12px;border-radius:13px}.tabs{margin-top:16px;flex-wrap:wrap}.tab{flex:1 1 30%;padding:11px 7px;font-size:12px}.settings{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.stage-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.stage{min-height:67px}.answers{grid-template-columns:repeat(4,minmax(0,1fr))}.memory-grid{grid-template-columns:1fr}.tuning-grid{grid-template-columns:repeat(2,minmax(0,1fr))}:root{--strw:73px;--fretw:49px}.fret{min-height:45px}.string-label{min-height:45px;font-size:12px;padding-left:7px}.note-pill{font-size:11px;min-width:31px}.boardtop{align-items:start}.memorow{grid-template-columns:65px 1fr}}
+    @media(prefers-reduced-motion:no-preference){.tab,.btn,.answer,.stage{transition:background .12s,transform .12s}.btn:active,.answer:active,.stage:active{transform:scale(.98)}}
+  </style>
+</head>
+<body>
+<div class="shell">
+  <header class="head"><div><div class="eyebrow">GUITARE 8 CORDES · MÉMORISATION</div><h1>FretLab <span style="color:var(--mint)">8</span></h1><p>Ton pense-bête et tes exercices pour reconnaître les notes sans compter les cases.</p></div><div class="mark" aria-hidden="true">♫</div></header>
+  <nav class="tabs" aria-label="Modes">
+    <button type="button" class="tab" data-mode="learn" aria-selected="true">🧠 Apprendre</button>
+    <button type="button" class="tab" data-mode="explore" aria-selected="false">👀 Explorer</button>
+    <button type="button" class="tab" data-mode="identify" aria-selected="false">🎯 Quelle note ?</button>
+    <button type="button" class="tab" data-mode="locate" aria-selected="false">📍 Trouver</button>
+    <button type="button" class="tab" data-mode="memo" aria-selected="false">📖 Pense-bête</button>
+  </nav>
+  <main>
+  <section class="surface">
+    <div class="settings">
+      <div class="field"><label for="pair">Deux cordes à travailler</label><select id="pair"><option value="6-7">Cordes 7 et 8 · graves</option><option value="4-5">Cordes 5 et 6</option><option value="2-3">Cordes 3 et 4</option><option value="0-1">Cordes 1 et 2 · aiguës</option></select></div>
+      <div class="field" id="scopeField"><label for="scope">Cordes des quiz classiques</label><select id="scope"><option value="pair">Ces deux cordes</option><option value="all">Les 8 cordes</option></select></div>
+      <div class="field" id="rangeField"><label for="range">Zone du manche</label><select id="range"><option value="0-5">Cases 0 à 5</option><option value="0-12" selected>Cases 0 à 12</option><option value="5-12">Cases 5 à 12</option><option value="12-24">Cases 12 à 24</option></select></div>
+      <div class="field" id="difficultyField"><label for="difficulty">Notes des quiz</label><select id="difficulty"><option value="all">Toutes les notes (12)</option><option value="natural">Notes naturelles (7)</option></select></div>
+      <div class="field hidden" id="visibilityField"><label for="visibility">Afficher sur le manche</label><select id="visibility"><option value="all">Toutes les notes</option><option value="natural">Notes naturelles</option><option value="none">Masquer les notes</option></select></div>
+    </div>
+  </section>
+
+  <section class="surface" id="learnPanel">
+    <div class="guide">
+      <div class="guide-top"><div><h2 class="mini-title">Progresse par petits groupes</h2><p class="section-intro" style="margin-bottom:0">Une paire de cordes, quelques positions, puis on mélange les acquis.</p></div><span class="pill-tag" id="learnPairName">Cordes 7 et 8</span></div>
+      <div class="stage-grid" id="stageGrid"></div>
+      <div class="guide-banner"><div><strong id="stageTitle">Palier 1 · 3 repères</strong><p id="stageDescription">Regarde les repères avant de te tester.</p></div><div class="learn-stats"><span class="chip">Reconnues sans compter : <strong id="masteredCount">0 / 6</strong></span><span class="chip">Questions du palier : <strong id="stageAnswered">0</strong></span></div></div>
+      <div class="actions" id="studyControls"><button type="button" class="btn primary" id="startPractice">Me tester sur ces repères</button><button type="button" class="btn secondary" id="stageNext">Palier suivant</button></div>
+      <div class="actions hidden" id="practiceControls"><button type="button" class="btn secondary" id="backToStudy">Revoir les repères</button><button type="button" class="btn secondary" id="nextLearn">Autre question →</button><button type="button" class="btn subtle" id="revealLearn">Voir la réponse</button></div>
+    </div>
+  </section>
+
+  <section class="surface" id="boardPanel">
+    <div class="task hidden" id="task" aria-live="polite"><div class="task-kicker" id="taskKicker"></div><div class="task-title" id="taskTitle"></div><div class="task-note" id="taskDetail"></div></div>
+    <div class="boardtop"><h2 id="boardTitle">Ton manche</h2><span class="muted small" id="boardSub">Corde 1 aiguë en haut, corde 8 grave en bas</span></div>
+    <div class="board-scroll" id="boardScroll" tabindex="0" aria-label="Manche de guitare ; faire défiler horizontalement"><div class="board" id="board"></div></div>
+    <div class="boardfoot"><span>0 = corde à vide · les points marquent les cases repères</span><span>↔ Glisse horizontalement</span></div>
+    <div id="exploreSection" class="hidden"><div class="readout" id="readout" aria-live="polite"><strong>Appuie sur une case</strong><p>La note apparaîtra ici, avec sa corde et sa case.</p></div></div>
+    <div id="memoSection" class="hidden"><div class="readout" id="memoReadout" aria-live="polite"><strong>Ton manche de référence</strong><p>Les notes sont visibles. Appuie sur une case pour la retrouver.</p></div></div>
+    <div id="answerSection" class="hidden"><div class="answers" id="answers" aria-label="Réponses possibles"></div><div class="feedback" id="answerFeedback" aria-live="polite">Réponds en regardant le manche.</div>
+      <div class="confidence hidden" id="confidence"><p>Tu as reconnu cette note immédiatement, sans dérouler les demi-tons ?</p><div class="actions"><button type="button" class="btn primary" id="recognised">Oui, sans compter !</button><button type="button" class="btn secondary" id="calculated">Non, j'ai dû compter</button></div></div>
+      <div class="actions" id="quizActions" style="margin-top:11px"><button type="button" class="btn primary" id="nextQuiz">Autre question →</button><button type="button" class="btn secondary" id="revealQuiz">Voir la réponse</button></div>
+    </div>
+    <div id="locateSection" class="hidden"><div class="feedback" id="locateFeedback" aria-live="polite">Appuie sur la bonne case.</div><div class="actions" style="margin-top:11px"><button type="button" class="btn primary" id="nextLocate">Autre question →</button><button type="button" class="btn secondary" id="revealLocate">Voir la réponse</button></div></div>
+    <div class="statsbar" id="statsbar"><span>Réponses : <strong id="score">0 / 0</strong></span><span>Précision : <strong id="accuracy">—</strong></span><span>Série : <strong id="streak">0</strong></span><span>Record : <strong id="best">0</strong></span><button type="button" class="btn subtle" id="resetStats" style="margin-left:auto;min-height:36px;padding:7px 10px;font-size:12px">Effacer mes scores</button></div>
+  </section>
+
+  <section class="surface hidden" id="memoPanel">
+    <h2 class="mini-title">Tes raccourcis pour arrêter de compter</h2><p class="section-intro">Utilise quelques points fixes, puis complète les notes entre eux. Les deux cordes sélectionnées sont résumées ci-dessous.</p>
+    <div id="anchorTable"></div>
+    <div class="memory-grid" style="margin-top:16px">
+      <div class="memory-card"><h3>↕ Les octaves</h3><p>La <strong>case 12</strong> porte toujours la même note que la corde à vide. Un repère immédiat.</p></div>
+      <div class="memory-card"><h3>🎸 La case 5</h3><p>En accordage standard, elle donne la note de la corde suivante (plus aiguë), sauf de Sol vers Si : <strong>case 4</strong>.</p></div>
+      <div class="memory-card"><h3>↔ Un demi-ton = une case</h3><p><strong>Mi → Fa</strong> et <strong>Si → Do</strong> : une seule case. Entre les autres notes naturelles voisines : deux cases.</p></div>
+      <div class="memory-card"><h3>🧠 Apprends des ancrages</h3><p>Fixe d'abord quelques cases (0, 3, 5), puis rapproche les notes inconnues de ces repères au lieu de repartir de zéro.</p></div>
+    </div>
+    <div class="rule"><strong>Ordre chromatique :</strong><div class="scale" id="chromaticScale"></div></div>
+  </section>
+
+  <details><summary>🎸 Modifier l'accordage</summary><p>Accordage standard 8 cordes, de la grave à l'aiguë : Fa♯ · Si · Mi · La · Ré · Sol · Si · Mi. Ici, la corde 1 est l'aiguë (en haut du manche).</p><div class="tuning-grid" id="tuningGrid"></div><div class="actions" style="margin-top:12px"><button type="button" class="btn secondary" id="defaultTuning">Rétablir l'accordage standard</button></div><p>Changer l'accordage réinitialise les notes mémorisées, car leurs positions changent. Les scores des quiz restent conservés.</p></details>
+  <details>
+    <summary>💾 Sauvegarder / restaurer mes progrès</summary>
+    <p>Les progrès restent sur cet appareil. Fais une sauvegarde avant de changer de navigateur ou de téléphone.</p>
+    <div class="actions">
+      <button type="button" class="btn secondary" id="exportProgress">Exporter ma sauvegarde</button>
+      <button type="button" class="btn secondary" id="importProgress">Importer une sauvegarde</button>
+      <input type="file" id="progressFile" accept=".json,application/json" class="hidden">
+    </div>
+    <p id="backupStatus" aria-live="polite"></p>
+  </details>
+  <p class="footnote">Fonctionne hors connexion. Tes réglages et tes progrès sont enregistrés dans ce navigateur, lorsqu'il autorise le stockage local. La reconnaissance « sans compter » se valide toi-même : c'est le meilleur moyen de mesurer tes automatismes sans tricher avec toi-même.</p>
+  </main>
+</div>
+<script>
+(()=>{
+'use strict';
+const NAMES=['Do','Do♯','Ré','Ré♯','Mi','Fa','Fa♯','Sol','Sol♯','La','La♯','Si'];
+const NATURAL=new Set([0,2,4,5,7,9,11]);
+const DEFAULT_TUNING=[4,11,7,2,9,4,11,6]; // 1->8, E B G D A E B F#
+const PAIRS=['6-7','4-5','2-3','0-1'];
+const STAGES=[
+ {name:'1 · Les bases',short:'Cases 0, 3, 5',positions:[0,3,5],description:'Trois positions sur chacune de tes deux cordes. Mémorise-les sans te presser.'},
+ {name:'2 · Les repères',short:'+ 7, 9, 12',positions:[0,3,5,7,9,12],description:'Les anciens repères reviennent avec trois nouvelles positions.'},
+ {name:'3 · Naturelles',short:'Toutes, de 0 à 12',naturalOnly:true,description:'Reconnais les sept notes naturelles sur les deux cordes.'},
+ {name:'4 · Le mélange',short:'Toutes les notes',description:'Toutes les cases 0 à 12, altérations comprises.'}
+];
+const STORE='fretlab8_v1';
+const $=id=>document.getElementById(id);
+function load(){try{const d=JSON.parse(localStorage.getItem(STORE)||'{}');return d&&typeof d==='object'?d:{}}catch{return {}}}
+const saved=load();
+const validTuning=a=>Array.isArray(a)&&a.length===8&&a.every(x=>Number.isInteger(x)&&x>=0&&x<12);
+function validStats(s){return {correct:Math.max(0,Number(s?.correct)||0),total:Math.max(0,Number(s?.total)||0),streak:Math.max(0,Number(s?.streak)||0),best:Math.max(0,Number(s?.best)||0)}}
+const state={mode:'learn',pair:PAIRS.includes(saved.pair)?saved.pair:PAIRS[0],scope:saved.scope==='all'?'all':'pair',range:'0-12',difficulty:'all',visibility:'all',tuning:validTuning(saved.tuning)?saved.tuning.slice():DEFAULT_TUNING.slice(),stats:validStats(saved.stats),stageByPair:saved.stageByPair&&typeof saved.stageByPair==='object'?saved.stageByPair:{},memory:saved.memory&&typeof saved.memory==='object'?saved.memory:{},stageCounts:saved.stageCounts&&typeof saved.stageCounts==='object'?saved.stageCounts:{},stage:0,learnPhase:'study',question:null,finished:false,guess:null,confidenceGiven:false,selected:null,recent:[]};
+function save(){try{localStorage.setItem(STORE,JSON.stringify({tuning:state.tuning,stats:state.stats,pair:state.pair,scope:state.scope,stageByPair:state.stageByPair,memory:state.memory,stageCounts:state.stageCounts}))}catch{}}
+const note=(s,f)=>(state.tuning[s]+f)%12;
+const label=n=>NAMES[n];
+const pairStrings=()=>state.pair.split('-').map(Number);
+const pairText=()=>pairStrings().map(s=>`${s+1} (${label(state.tuning[s])})`).join(' et ');
+const makeButton=(text,cls,fn)=>{const b=document.createElement('button');b.type='button';b.className=cls;b.textContent=text;b.addEventListener('click',fn);return b};
+const keyFor=p=>`${state.tuning.join(',')}|${p.s}:${p.f}`;
+function itemMemory(p){const k=keyFor(p);const v=state.memory[k];return v&&typeof v==='object'?v:{fast:0,weak:0};}
+function updateMemory(p,type){const k=keyFor(p);const m=itemMemory(p);if(type==='fast'){m.fast=Math.min(8,Math.max(0,Number(m.fast)||0)+1);m.weak=Math.max(0,(Number(m.weak)||0)-1)}else{m.fast=0;m.weak=Math.min(10,(Number(m.weak)||0)+1)}state.memory[k]=m;save();displayStageStats()}
+function statsUI(){$('score').textContent=`${state.stats.correct} / ${state.stats.total}`;$('accuracy').textContent=state.stats.total?`${Math.round(state.stats.correct/state.stats.total*100)} %`:'—';$('streak').textContent=state.stats.streak;$('best').textContent=state.stats.best}
+function record(correct){state.stats.total++;if(correct){state.stats.correct++;state.stats.streak++;state.stats.best=Math.max(state.stats.best,state.stats.streak)}else{state.stats.streak=0}if(state.mode==='learn'){const k=`${state.pair}:${state.stage}`;state.stageCounts[k]=(Number(state.stageCounts[k])||0)+1}save();statsUI();displayStageStats()}
+function stagePositions(){const st=STAGES[state.stage],list=[];for(const s of pairStrings())for(let f=0;f<=12;f++){if(Array.isArray(st.positions)&&!st.positions.includes(f))continue;if(st.naturalOnly&&!NATURAL.has(note(s,f)))continue;list.push({s,f,n:note(s,f)})}return list}
+function randomQuestion(items,avoidKey){if(!items.length)return null;let choices=items.filter(p=>!state.recent.slice(-3).includes(avoidKey(p)));if(!choices.length)choices=items;
+ const weights=choices.map(p=>{const m=itemMemory(p);return state.mode==='learn'?Math.max(1,6-Math.min(5,m.fast))+Math.min(4,Number(m.weak)||0):1});
+ let r=Math.random()*weights.reduce((a,b)=>a+b,0),p=choices[0];for(let i=0;i<choices.length;i++){r-=weights[i];if(r<=0){p=choices[i];break}}
+ state.recent.push(avoidKey(p));if(state.recent.length>8)state.recent.shift();return {...p};}
+function modeStrings(){return state.scope==='all'?[0,1,2,3,4,5,6,7]:pairStrings()}
+function quizPositions(){const [start,end]=state.range.split('-').map(Number),items=[];for(const s of modeStrings())for(let f=start;f<=end;f++){const n=note(s,f);if(state.difficulty==='natural'&&!NATURAL.has(n))continue;items.push({s,f,n})}return items}
+function setStage(n){state.stage=Math.min(3,Math.max(0,n));state.stageByPair[state.pair]=state.stage;state.learnPhase='study';state.finished=false;state.question=null;state.recent=[];save();renderGuide();renderSections();renderBoard()}
+function stageStart(){state.learnPhase='quiz';state.recent=[];newQuestion();renderGuide();renderSections()}
+function studyAgain(){state.learnPhase='study';state.question=null;state.finished=false;renderGuide();renderSections();renderBoard()}
+function renderGuide(){const st=STAGES[state.stage];$('learnPairName').textContent=`Cordes ${pairText()}`;$('stageTitle').textContent=`Palier ${state.stage+1} · ${st.name.split(' · ')[1]}`;$('stageDescription').textContent=st.description;
+ const grid=$('stageGrid');grid.textContent='';STAGES.forEach((v,i)=>{const b=makeButton('', 'stage',()=>setStage(i));b.setAttribute('aria-current',state.stage===i?'step':'false');const title=document.createElement('strong');title.textContent=v.name;const short=document.createElement('span');short.textContent=v.short||'Cases 0 à 12';b.append(title,short);grid.appendChild(b)});displayStageStats();$('stageNext').disabled=state.stage===3}
+function displayStageStats(){if(!$('masteredCount'))return;const items=stagePositions();const done=items.filter(p=>(Number(itemMemory(p).fast)||0)>=2).length;$('masteredCount').textContent=`${done} / ${items.length}`;$('stageAnswered').textContent=Number(state.stageCounts[`${state.pair}:${state.stage}`])||0}
+function newQuestion(){state.finished=false;state.guess=null;state.confidenceGiven=false;state.selected=null;$('confidence').classList.add('hidden');
+ if(state.mode==='learn'&&state.learnPhase==='quiz'){state.question=randomQuestion(stagePositions(),p=>`${p.s}-${p.f}`);setFeedback('answerFeedback','Quelle note se trouve sur la case « ? » ?','')}
+ else if(state.mode==='identify'){state.question=randomQuestion(quizPositions(),p=>`${p.s}-${p.f}`);setFeedback('answerFeedback','Quelle note se trouve sur la case « ? » ?','')}
+ else if(state.mode==='locate'){state.question=randomQuestion(quizPositions(),p=>`${p.s}-${p.n}`);setFeedback('locateFeedback','Appuie sur une case de la corde indiquée.','')}
+ else state.question=null;
+ renderTask();renderBoard();renderAnswers();scrollToQuestion()}
+function setFeedback(id,message,cls){$(id).className=`feedback ${cls||''}`.trim();$(id).textContent=message}
+function renderTask(){const active=state.mode==='identify'||state.mode==='locate'||(state.mode==='learn'&&state.learnPhase==='quiz');$('task').classList.toggle('hidden',!active);if(!active||!state.question)return;const q=state.question;
+ $('taskKicker').textContent=state.mode==='learn'?`PALIER ${state.stage+1} · RECONNAÎTRE`:state.mode==='identify'?'QUIZ · RECONNAÎTRE':'QUIZ · LOCALISER';
+ $('taskTitle').textContent=state.mode==='locate'?`Trouve « ${label(q.n)} »`:'Quelle est cette note ?';
+ $('taskDetail').textContent=state.mode==='locate'?`Sur la corde ${q.s+1} (${label(state.tuning[q.s])} à vide). Plusieurs cases peuvent convenir.`:`Corde ${q.s+1} (${label(state.tuning[q.s])} à vide), case ${q.f}. Essaie de répondre sans compter.`}
+function boardRows(){return(state.mode==='learn'||state.mode==='memo')?pairStrings():[0,1,2,3,4,5,6,7]}
+function boardBounds(){if(state.mode==='learn'){return[0,state.stage===0?5:12]}if(state.mode==='memo')return[0,12];return state.range.split('-').map(Number)}
+function renderBoard(){const board=$('board');board.textContent='';const rows=boardRows(),[first,last]=boardBounds(),q=state.question;board.style.setProperty('--cols',last-first+1);
+ $('boardTitle').textContent=state.mode==='learn'?'Tes deux cordes':state.mode==='memo'?'Le manche en pense-bête':'Le manche';$('boardSub').textContent=state.mode==='learn'?'Lis les repères, puis cache-les pour t’entraîner':state.mode==='memo'?'Toutes les notes sont visibles': 'Corde 1 aiguë en haut · corde 8 grave en bas';
+ const header=document.createElement('div');header.className='fret-row';const corner=document.createElement('div');corner.className='head-cell corner';corner.textContent='Corde';header.appendChild(corner);
+ for(let f=first;f<=last;f++){const h=document.createElement('div');h.className='head-cell'+([3,5,7,9,15,17,19,21].includes(f)?' dot':[12,24].includes(f)?' double':'');h.textContent=f;header.appendChild(h)}board.appendChild(header);
+ const anchors=state.mode==='learn'?new Set(stagePositions().map(p=>`${p.s}-${p.f}`)):null;
+ for(const s of rows){const row=document.createElement('div');row.className='fret-row';const sh=document.createElement('div');sh.className='string-label';const name=document.createElement('span');name.textContent=`${s+1} · ${label(state.tuning[s])}`;const small=document.createElement('small');small.textContent=s===0?'aiguë':s===7?'grave':'corde';sh.append(name,small);row.appendChild(sh);
+ for(let f=first;f<=last;f++){const n=note(s,f),isQuestion=q&&q.s===s&&q.f===f,studying=state.mode==='learn'&&state.learnPhase==='study',isAnchor=anchors&&anchors.has(`${s}-${f}`);const fret=makeButton('','fret'+(f===0?' open':''),()=>clickFret(s,f));fret.style.setProperty('--wire',`${Math.max(1,3-s*.26)}px`);
+ fret.title=`Corde ${s+1}, case ${f}`;fret.setAttribute('aria-label',fret.title);
+ const pill=document.createElement('span');pill.className=`note-pill ${NATURAL.has(n)?'natural':'sharp'}`;
+ let visible=false,text='';
+ if(state.mode==='explore'){visible=state.visibility==='all'||state.visibility==='natural'&&NATURAL.has(n)||state.selected?.s===s&&state.selected?.f===f;text=label(n);if(state.selected?.s===s&&state.selected?.f===f)fret.classList.add('target')}
+ else if(state.mode==='memo'){visible=true;text=label(n);if(state.selected?.s===s&&state.selected?.f===f)fret.classList.add('target')}
+ else if(studying){visible=!!isAnchor;text=label(n);if(isAnchor)fret.classList.add('anchor');else fret.classList.add('dim')}
+ else if((state.mode==='identify'||state.mode==='learn')&&isQuestion){visible=true;text=state.finished?label(n):'?';fret.classList.add('target')}
+ else if(state.mode==='locate'&&q&&state.finished&&s===q.s&&n===q.n){visible=true;text=label(n);fret.classList.add('correct')}
+ if(state.mode==='locate'&&state.guess&&state.guess.s===s&&state.guess.f===f&&!state.guess.correct){visible=true;text=label(n);fret.classList.add('wrong')}
+ pill.textContent=text;if(!visible)pill.classList.add('hidden');fret.appendChild(pill);row.appendChild(fret)}board.appendChild(row)}
+}
+function scrollToQuestion(){if(!(state.mode==='identify'||state.mode==='learn'&&state.learnPhase==='quiz')||!state.question)return;requestAnimationFrame(()=>{const target=$('board').querySelector('.fret.target');if(!target)return;const wrap=$('boardScroll');wrap.scrollLeft=Math.max(0,target.offsetLeft-wrap.clientWidth/2+22)})}
+function clickFret(s,f){const n=note(s,f);
+ if(state.mode==='explore'||state.mode==='memo'||state.mode==='learn'&&state.learnPhase==='study'){
+  state.selected={s,f};const el=state.mode==='memo'?$('memoReadout'):$('readout');if(el){el.textContent='';const h=document.createElement('strong');h.textContent=label(n);const p=document.createElement('p');p.textContent=`Corde ${s+1} (${label(state.tuning[s])} à vide), case ${f}.`;el.append(h,p)}renderBoard();return}
+ if(state.mode!=='locate'||state.finished||!state.question)return;
+ const success=s===state.question.s&&n===state.question.n;state.finished=true;state.guess={s,f,correct:success};record(success);setFeedback('locateFeedback',success?`Exact ! ${label(n)} sur la corde ${s+1}, case ${f}.`:`Ce n’est pas la bonne position. Les ${label(state.question.n)} de la corde ${state.question.s+1} sont en vert.`,success?'good':'bad');renderBoard()}
+function answer(n){if(!(['identify','learn'].includes(state.mode))||state.mode==='learn'&&state.learnPhase!=='quiz'||state.finished||!state.question)return;
+ const correct=n===state.question.n;state.finished=true;state.guess=n;record(correct);
+ if(state.mode==='learn'){if(!correct)updateMemory(state.question,'weak');else $('confidence').classList.remove('hidden')}
+ setFeedback('answerFeedback',correct?`Exact ! Corde ${state.question.s+1}, case ${state.question.f} = ${label(n)}.`:`C’était ${label(state.question.n)}, et non ${label(n)}. Revois ce repère, il reviendra plus souvent.`,correct?'good':'bad');renderBoard();renderAnswers()}
+function confidence(fast){if(state.mode!=='learn'||!state.finished||state.guess!==state.question?.n||state.confidenceGiven)return;state.confidenceGiven=true;updateMemory(state.question,fast?'fast':'weak');$('confidence').classList.add('hidden');const m=itemMemory(state.question);setFeedback('answerFeedback',fast?`Bien ! ${label(state.question.n)} se renforce dans ta mémoire (${Math.min(2,m.fast)}/2 reconnaissances à la suite).`:'Bonne réponse, mais encore calculée : elle reviendra plus souvent pour créer un réflexe.','good')}
+function renderAnswers(){const box=$('answers');box.textContent='';const active=state.mode==='identify'||state.mode==='learn'&&state.learnPhase==='quiz';if(!active)return;
+ const values=state.mode==='identify'&&state.difficulty==='natural'?[0,2,4,5,7,9,11]:NAMES.map((_,i)=>i);
+ values.forEach(n=>{const b=makeButton(label(n),'answer',()=>answer(n));if(state.finished){b.disabled=true;if(n===state.question.n)b.classList.add('correct');if(n===state.guess&&n!==state.question.n)b.classList.add('wrong')}box.appendChild(b)})}
+function reveal(){const active=state.mode==='identify'||state.mode==='locate'||state.mode==='learn'&&state.learnPhase==='quiz';if(!active||state.finished||!state.question)return;state.finished=true;record(false);if(state.mode==='learn')updateMemory(state.question,'weak');
+ if(state.mode==='locate'){setFeedback('locateFeedback',`Les positions de ${label(state.question.n)} sur la corde ${state.question.s+1} sont en vert.`,'bad')}
+ else{setFeedback('answerFeedback',`La note était ${label(state.question.n)}. Observe-la, puis essaie de la retrouver sans compter.`,'bad');renderAnswers()}
+ renderBoard()}
+function sections(){const learning=state.mode==='learn',studying=learning&&state.learnPhase==='study',testing=learning&&state.learnPhase==='quiz';
+ $('learnPanel').classList.toggle('hidden',!learning);$('memoPanel').classList.toggle('hidden',state.mode!=='memo');$('scopeField').classList.toggle('hidden',!['identify','locate'].includes(state.mode));$('rangeField').classList.toggle('hidden',!['identify','locate','explore'].includes(state.mode));$('difficultyField').classList.toggle('hidden',!['identify','locate'].includes(state.mode));$('visibilityField').classList.toggle('hidden',state.mode!=='explore');
+ $('studyControls').classList.toggle('hidden',!studying);$('practiceControls').classList.toggle('hidden',!testing);$('exploreSection').classList.toggle('hidden',state.mode!=='explore');$('memoSection').classList.toggle('hidden',state.mode!=='memo');$('answerSection').classList.toggle('hidden',!(testing||state.mode==='identify'));$('quizActions').classList.toggle('hidden',state.mode!=='identify');$('locateSection').classList.toggle('hidden',state.mode!=='locate');$('statsbar').classList.toggle('hidden',state.mode==='memo'||state.mode==='explore');$('boardPanel').classList.remove('hidden');
+ $('boardPanel').querySelector('.boardfoot').classList.remove('hidden');$('task').classList.toggle('hidden',!(testing||state.mode==='identify'||state.mode==='locate'));
+ if(studying||state.mode==='explore'||state.mode==='memo'){$('task').classList.add('hidden')}
+}
+function setMode(mode){state.mode=mode;state.recent=[];state.question=null;state.finished=false;state.selected=null;state.guess=null;state.confidenceGiven=false;document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.mode===mode)));if(mode==='learn'){state.learnPhase='study';renderGuide()}sections();if(['identify','locate'].includes(mode))newQuestion();else{renderTask();renderBoard()}if(mode==='memo')renderMemo()}
+function renderMemo(){const table=$('anchorTable');table.textContent='';for(const s of pairStrings()){
+ const row=document.createElement('div');row.className='memorow';const heading=document.createElement('strong');heading.textContent=`Corde ${s+1} · ${label(state.tuning[s])}`;heading.style.fontSize='12px';const frets=document.createElement('div');frets.className='memofrets';for(const f of [0,3,5,7,9,12]){const item=document.createElement('span');item.className='memofret';const no=document.createElement('small');no.textContent=`${f} :`;item.append(no,document.createTextNode(' '+label(note(s,f))));frets.appendChild(item)}row.append(heading,frets);table.appendChild(row)}
+ const scale=$('chromaticScale');scale.textContent='';NAMES.forEach(n=>{const sp=document.createElement('span');sp.textContent=n;scale.appendChild(sp)})}
+function renderSections(){sections()}
+function tuningUI(){const grid=$('tuningGrid');grid.textContent='';for(let s=0;s<8;s++){const wrap=document.createElement('div');const lbl=document.createElement('label');lbl.htmlFor=`t${s}`;lbl.textContent=`Corde ${s+1}${s===0?' (aiguë)':s===7?' (grave)':''}`;const sel=document.createElement('select');sel.id=`t${s}`;NAMES.forEach((v,i)=>{const o=document.createElement('option');o.value=i;o.textContent=v;sel.appendChild(o)});sel.value=state.tuning[s];sel.addEventListener('change',()=>{state.tuning[s]=Number(sel.value);state.memory={};state.stageCounts={};save();renderGuide();renderMemo();if(['identify','locate'].includes(state.mode)||state.mode==='learn'&&state.learnPhase==='quiz')newQuestion();else renderBoard()});wrap.append(lbl,sel);grid.appendChild(wrap)}}
+$('pair').value=state.pair;$('scope').value=state.scope;state.stage=Math.min(3,Math.max(0,Number(state.stageByPair[state.pair])||0));
+$('pair').addEventListener('change',e=>{state.pair=e.target.value;state.stage=Math.min(3,Math.max(0,Number(state.stageByPair[state.pair])||0));state.selected=null;state.recent=[];renderGuide();if(state.mode==='learn'){state.learnPhase='study';sections();renderBoard()}else if(['identify','locate'].includes(state.mode))newQuestion();else{renderBoard();if(state.mode==='memo')renderMemo()}});
+$('scope').addEventListener('change',e=>{state.scope=e.target.value;save();if(['identify','locate'].includes(state.mode))newQuestion()});
+$('range').addEventListener('change',e=>{state.range=e.target.value;$('boardScroll').scrollLeft=0;if(['identify','locate'].includes(state.mode))newQuestion();else renderBoard()});
+$('difficulty').addEventListener('change',e=>{state.difficulty=e.target.value;if(['identify','locate'].includes(state.mode))newQuestion();else renderBoard()});
+$('visibility').addEventListener('change',e=>{state.visibility=e.target.value;renderBoard()});
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.mode)));
+$('startPractice').addEventListener('click',stageStart);$('backToStudy').addEventListener('click',studyAgain);$('stageNext').addEventListener('click',()=>setStage(state.stage+1));$('nextLearn').addEventListener('click',newQuestion);$('revealLearn').addEventListener('click',reveal);
+$('nextQuiz').addEventListener('click',newQuestion);$('revealQuiz').addEventListener('click',reveal);$('nextLocate').addEventListener('click',newQuestion);$('revealLocate').addEventListener('click',reveal);
+$('recognised').addEventListener('click',()=>confidence(true));$('calculated').addEventListener('click',()=>confidence(false));
+$('defaultTuning').addEventListener('click',()=>{state.tuning=DEFAULT_TUNING.slice();state.memory={};state.stageCounts={};tuningUI();save();renderGuide();renderMemo();if(['identify','locate'].includes(state.mode)||state.mode==='learn'&&state.learnPhase==='quiz')newQuestion();else renderBoard()});
+$('resetStats').addEventListener('click',()=>{if(confirm('Remettre à zéro les scores des exercices ? Tes repères mémorisés seront conservés.')){state.stats={correct:0,total:0,streak:0,best:0};save();statsUI()}});
+tuningUI();statsUI();setMode('learn');
+
+// Les sauvegardes de l'utilisateur ne sont jamais envoyées à GitHub Pages.
+function progressSnapshot(){
+ return {tuning:state.tuning,stats:state.stats,pair:state.pair,scope:state.scope,
+  stageByPair:state.stageByPair,memory:state.memory,stageCounts:state.stageCounts};
+}
+function backupStatus(message){$('backupStatus').textContent=message}
+$('exportProgress').addEventListener('click',()=>{
+ try{
+  const payload={application:'FretLab 8',format:1,exportedAt:new Date().toISOString(),data:progressSnapshot()};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='fretlab8-sauvegarde.json';
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),2000);
+  backupStatus('Sauvegarde créée. Conserve le fichier JSON dans un endroit sûr.');
+ }catch(e){backupStatus('Impossible de créer la sauvegarde sur ce navigateur.')}
+});
+$('importProgress').addEventListener('click',()=>$('progressFile').click());
+$('progressFile').addEventListener('change',async e=>{
+ const file=e.target.files?.[0];if(!file)return;
+ try{
+  if(file.size>1024*1024)throw new Error('Fichier trop volumineux');
+  const payload=JSON.parse(await file.text());
+  const data=payload?.application==='FretLab 8'&&payload?.data?payload.data:payload;
+  if(!data||typeof data!=='object'||!Array.isArray(data.tuning)||!validTuning(data.tuning))
+   throw new Error('Fichier non reconnu');
+  if(!confirm('Remplacer la progression actuelle par cette sauvegarde ?'))return;
+  const clean={
+   tuning:data.tuning,stats:validStats(data.stats),
+   pair:PAIRS.includes(data.pair)?data.pair:PAIRS[0],
+   scope:data.scope==='all'?'all':'pair',
+   stageByPair:data.stageByPair&&typeof data.stageByPair==='object'&&!Array.isArray(data.stageByPair)?data.stageByPair:{},
+   memory:data.memory&&typeof data.memory==='object'&&!Array.isArray(data.memory)?data.memory:{},
+   stageCounts:data.stageCounts&&typeof data.stageCounts==='object'&&!Array.isArray(data.stageCounts)?data.stageCounts:{}
+  };
+  localStorage.setItem(STORE,JSON.stringify(clean));location.reload();
+ }catch(err){backupStatus('Importation impossible : vérifie que c’est une sauvegarde FretLab 8 valide.')}
+ finally{e.target.value=''}
+});
+if('serviceWorker' in navigator&&location.protocol==='https:'){
+ window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(()=>{}));
+}
+
+})();
+</script>
+</body>
+</html>
