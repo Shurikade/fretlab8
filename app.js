@@ -126,7 +126,7 @@ tuningUI();statsUI();setMode('learn');
 
 // Les sauvegardes de l'utilisateur ne sont jamais envoyées à GitHub Pages.
 function progressSnapshot(){
- return {tuning:state.tuning,stats:state.stats,pair:state.pair,scope:state.scope,
+ return {tuning:state.tuning,octaves:state.octaves,stats:state.stats,pair:state.pair,scope:state.scope,
   stageByPair:state.stageByPair,memory:state.memory,stageCounts:state.stageCounts};
 }
 function backupStatus(message){$('backupStatus').textContent=message}

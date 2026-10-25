@@ -1,5 +1,5 @@
 /* FretLab 8 : cache atomique, activation demandée par le joueur. */
-const CACHE_NAME='fretlab8-pwa-v2';
+const CACHE_NAME='fretlab8-pwa-v3';
 const PRECACHE=['./','./index.html','./app.js','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-maskable-512.png'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(PRECACHE))));
 self.addEventListener('message',event=>{if(event.data==='ACTIVATE')self.skipWaiting()});
